@@ -31,6 +31,7 @@ const connection = mysql.createConnection({
   user: 'root',
   password: 'password',
 });
+
 connection.connect((err) => {
  if(!err)
     console.log('Database is connected!');
