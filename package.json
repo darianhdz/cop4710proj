@@ -1,0 +1,31 @@
+{
+  "name": "swipe1",
+  "version": "1.0.0",
+  "description": "test 1 for swipe app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darianhdz/cop4710proj.git"
+  },
+  "keywords": [
+    "project"
+  ],
+  "author": "Darian",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/darianhdz/cop4710proj/issues"
+  },
+  "homepage": "https://github.com/darianhdz/cop4710proj#readme",
+  "dependencies": {
+    "bootstrap": "^4.5.3",
+    "express": "^4.17.1",
+    "mysql": "^2.18.1",
+    "purecss": "^2.0.3"
+  },
+  "devDependencies": {
+    "csstyle": "^2.0.2"
+  }
+}
