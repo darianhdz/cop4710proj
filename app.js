@@ -1,3 +1,6 @@
+//https://codehandbook.org/web-app-using-node-js-and-mysql/
+//Starting code for node.js
+
 var express = require('express');
 var app = express();
 
@@ -8,8 +11,8 @@ app.listen(3000,function(){
 
 
 app.use('/node_modules',  express.static(__dirname + '/node_modules'));
-
 app.use('/style',  express.static(__dirname + '/style'));
+app.use('/script',  express.static(__dirname + '/script'));
 
 
 app.get('/',function(req,res){

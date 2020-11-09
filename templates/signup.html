@@ -13,92 +13,39 @@
     <link rel="stylesheet" href="/style/styles.css">
 </head>
 <body>
-<div class="header">
-    <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
-        <a class="pure-menu-heading" href="">Video Game Recommendation List</a>
+	<div class="header">
+		<div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+			<a class="pure-menu-heading" href="">Video Game Recommendation List</a>
 
-        <ul class="pure-menu-list">
-            <li class="pure-menu-item pure-menu-selected"><a href="#" class="pure-menu-link">Home</a></li>
-            <li class="pure-menu-item"><a href="/templates/signin.html" class="pure-menu-link">Sign In</a></li>
-        </ul>
-    </div>
-</div>
+			<ul class="pure-menu-list">
+				<li class="pure-menu-item"><a href="/" class="pure-menu-link">Home</a></li>
+				<li class="pure-menu-item"><a href="/showSignInPage" class="pure-menu-link">Sign In</a></li>
+			</ul>
+		</div>
+	</div>
 
-<div class="splash-container">
-    <div class="splash">
-        <h1 class="splash-head">Name for project</h1>
-        <p class="splash-subhead">
-            Recommendations of video games based on what you like.
-        </p>
-        <p>
-            <a href="/templates/signup.html" class="pure-button pure-button-primary">Get Started</a>
-        </p>
-    </div>
-</div>
+	<div class="content">
+			<div class="pure-g">
+				<div class="l-box-lrg pure-u-1 pure-u-md-2-5">
+					<form class="pure-form pure-form-stacked">
+						<fieldset>
 
-<div class="content-wrapper">
-    <div class="content">
-        <h2 class="content-head is-center">How it works</h2>
+							 <label for="name">Your Name</label>
+							 <input id="name" type="text" placeholder="Your Name">
+							
+							<label for="email">Your Email</label>
+							<input id="email" type="email" placeholder="Your Email">
 
-        <div class="pure-g">
-            <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+							<label for="password">Your Password</label>
+							<input id="password" type="password" placeholder="Your Password">
 
-                <h3 class="content-subhead">
-                    <i class="fa fa-rocket"></i>
-                    Steam Account Required
-                </h3>
-                <p>
-                    We gather data from your Steam library
-                </p>
-            </div>
-            <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
-                <h3 class="content-subhead">
-                    <i class="fa fa-mobile"></i>
-					Compile the games into a list
-                </h3>
-                <p>
-                    List is created that you can view and edit
-                </p>
-            </div>
-            <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
-                <h3 class="content-subhead">
-                    <i class="fa fa-th-large"></i>
-                    You get swiping
-                </h3>
-                <p>
-                    Using an advanced function, we recommend games to you in real time as you like or dislike games presented to you.
-                </p>
-            </div>
-        </div>
-    </div>
-    <div class="content">
-        <h2 class="content-head is-center">Dolore magna aliqua. Uis aute irure.</h2>
+							<button type="submit" class="pure-button">Sign Up</button>
+						</fieldset>
+					</form>
+				</div>
 
-        <div class="pure-g">
-            <div class="l-box-lrg pure-u-1 pure-u-md-2-5">
-                <form class="pure-form pure-form-stacked">
-                    <fieldset>
+			</div>
 
-                        <label for="name">Your Name</label>
-                        <input id="name" type="text" placeholder="Your Name">
-
-
-                        <label for="email">Your Email</label>
-                        <input id="email" type="email" placeholder="Your Email">
-
-                        <label for="password">Your Password</label>
-                        <input id="password" type="password" placeholder="Your Password">
-
-                        <button type="submit" class="pure-button">Sign Up</button>
-                    </fieldset>
-                </form>
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
+		</div>
 </body>
 </html>
