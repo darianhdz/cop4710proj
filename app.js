@@ -5,6 +5,9 @@
 
 var express = require('express');
 var app = express();
+var session = require('express-session');
+var bodyParser = require('body-parser');
+var path = require('path');
 
 app.use(session({
 	secret: 'secret',
@@ -12,32 +15,47 @@ app.use(session({
 	saveUninitialized: true
 }));
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended : true}));
+
 app.post('/auth', function(request, response) {
-	var username = request.body.username;
+	console.log('it worked');
+	var email = request.body.email;
 	var password = request.body.password;
-	if (username && password) {
-		connection.query('SELECT * FROM accounts WHERE username = ? AND password = ?', [username, password], function(error, results, fields) {
-			if (results.length > 0) {
-				request.session.loggedin = true;
-				request.session.username = username;
-				response.redirect('/home');
-			} else {
-				response.send('Incorrect Username and/or Password!');
-			}			
-			response.end();
+	console.log('it worked');
+	if (email && password) {
+		var sql = "SELECT * FROM user WHERE email = ? AND password = ?";
+		console.log('it worked');
+		connection.query(sql,[email, password], function(error, results)
+		{
+			if(results.length > 0)
+			{
+				console.log('it worked');
+			}
+			else
+			{
+				console.log('boo');
+			}
 		});
-	} else {
-		response.send('Please enter Username and Password!');
-		response.end();
 	}
 });
 
-app.use(bodyParser.urlencoded({extended : true}));
-app.use(bodyParser.json());
-
-// Binding express app to port 3000
-app.listen(3000,function(){
-    console.log('Node server running @ http://localhost:3000')
+app.post('/register', function(request, response) {
+	var email = request.body.email;
+	var password = request.body.password;
+	if (email && password) {
+		connection.query("INSERT INTO user(User_ID_Steam,email, password) VALUES (NULL,'+email+', '+password+')", [email, password], function(error, results, fields) {
+			if (results.length > 0) {
+				request.session.loggedin = true;
+				request.session.email = email;
+				response.redirect('/');
+			} 
+			response.end();
+		});
+	} else {
+		response.send('Please enter Email and Password!');
+		response.end();
+	}
 });
 
 
@@ -53,6 +71,7 @@ app.get('/',function(req,res){
 
 app.get('/showSignInPage',function(req,res){
     res.sendFile('signin.html',{'root': __dirname + '/templates'});
+	console.log('it worked');
 })
 
 app.get('/showSignUpPage',function(req,res){
@@ -64,11 +83,17 @@ const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'password',
+  database : 'gamerecs'
 });
 
 connection.connect((err) => {
  if(!err)
+ {
     console.log('Database is connected!');
+  }
+ 
 else
     console.log('Database not connected! : '+ JSON.stringify(err, undefined,2));
 });
+
+app.listen(3000);
