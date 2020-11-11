@@ -8,6 +8,10 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var path = require('path');
 var app = express();
+
+var engine = require('consolidate');
+app.engine('html', require('ejs').renderFile);
+
 app.use(session({
 	secret: 'secret',
 	resave: true,
@@ -38,10 +42,34 @@ app.post('/auth', function(request, response) {
 			if (results.length > 0) {
 				request.session.loggedin = true;
 				request.session.username = username;
-				response.redirect('/');
+				response.redirect('/dashboard');
 			} else {
 				response.send('Incorrect Username and/or Password!');
 			}			
+			response.end();
+		});
+	} else {
+		response.send('Please enter Username and Password!');
+		response.end();
+	}
+});
+
+app.post('/register', function(request, response) {
+	var username = request.body.username;
+	var password = request.body.password;
+	console.log(username);
+	console.log(password);
+	if (username && password) {
+		var sql = "INSERT INTO user(User_ID_Steam, email, password) VALUES ('NULL', '"+username+"', '"+password+"')";
+		connection.query(sql, [username, password], function(error, results, fields) {
+			if (error) {
+     console.log(error);
+}
+			
+				request.session.loggedin = true;
+				request.session.username = username;
+				response.redirect('/dashboard');
+					
 			response.end();
 		});
 	} else {
@@ -60,6 +88,21 @@ app.get('/',function(req,res){
     res.sendFile(path.join(__dirname + '/templates/home.html'));
 })
 
+app.get('/account',function(req,res){
+    res.sendFile('account.html',{'root': __dirname + '/templates'});
+})
+
+app.get('/dashboard',function(req,res){
+	if(req.session.loggedin == true)
+	{
+	var name = req.session.username;
+	res.render( __dirname + '/templates/dashboard.html', {name: name});
+	}
+	else
+	{
+		res.send('Login to see this page');
+	}
+})
 
 app.get('/showSignInPage',function(req,res){
     res.sendFile('signin.html',{'root': __dirname + '/templates'});

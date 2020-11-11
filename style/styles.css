@@ -191,6 +191,15 @@ a.pure-button-primary {
 
 }
 
+.acc {
+    position: absolute;
+    width: 100%;
+    min-height: 12%;
+    z-index: 2;
+    background: white;
+
+}
+
 /* We want to give the content area some more padding */
 .content {
     padding: 1em 1em 3em;

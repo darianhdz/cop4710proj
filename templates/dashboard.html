@@ -1,0 +1,40 @@
+<!-- CODE IS NOT MINE, SOURCED FROM https://purecss.io/layouts/ UNDER THE zLib license http://www.zlib.net/zlib_license.html -->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Game Recommendation list</title>
+	<link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css" integrity="sha384-4ZPLezkTZTsojWFhpdFembdzFudphhoOzIunR1wH6g1WQDzCAiPvDyitaK67mp0+" crossorigin="anonymous">
+    <link rel="stylesheet" href="/node_modules/purecss/build/pure-min.css">
+    <link rel="stylesheet" href="/node_modules/purecss/build/grids-responsive-min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <link rel="stylesheet" href="/style/styles.css">
+</head>
+<body>
+
+<div class="header">
+    <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+        <a class="pure-menu-heading" href="">Video Game Recommendation List</a>
+
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-selected"><a href="#" class="pure-menu-link">Dashboard</a></li>
+            <li class="pure-menu-item"><a href="/account" class="pure-menu-link">Account</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="splash-container">
+    <div class="splash">
+        <h1 class="splash-head">Welcome back <%=name%></h1>
+        <p>
+            <a href="/createList" class="pure-button pure-button-primary">Create New List</a>
+			<a href="/viewList" class="pure-button pure-button-primary">View List</a>
+        </p>
+    </div>
+</div>
+
+
+</body>
+</html>
