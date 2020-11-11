@@ -1,45 +1,23 @@
 <!-- CODE IS NOT MINE, SOURCED FROM https://purecss.io/layouts/ UNDER THE zLib license http://www.zlib.net/zlib_license.html -->
+<!-- ADDITIONALLY FROM https://codeshack.io/basic-login-system-nodejs-express-mysql/-->
 
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Game Recommendation list</title>
-	<link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css" integrity="sha384-4ZPLezkTZTsojWFhpdFembdzFudphhoOzIunR1wH6g1WQDzCAiPvDyitaK67mp0+" crossorigin="anonymous">
-    <link rel="stylesheet" href="/node_modules/purecss/build/pure-min.css">
-    <link rel="stylesheet" href="/node_modules/purecss/build/grids-responsive-min.css">
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
-    <link rel="stylesheet" href="/style/styles.css">
-</head>
-<body>
-	<div class="header">
-		<div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
-			<a class="pure-menu-heading" href="">Video Game Recommendation List</a>
-
-			<ul class="pure-menu-list">
-				<li class="pure-menu-item"><a href="/" class="pure-menu-link">Home</a></li>
-				<li class="pure-menu-item pure-menu-selected"><a href="#" class="pure-menu-link">Sign In</a></li>
-			</ul>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Login Form Tutorial</title>
+		<style>
+		
+		</style>
+	</head>
+	<body>
+		<div class="login-form">
+			<h1>Login Form</h1>
+			<form action="/auth" method="POST">
+				<input type="text" name="username" placeholder="Username" required>
+				<input type="password" name="password" placeholder="Password" required>
+				<input type="submit">
+			</form>
 		</div>
-	</div>
-
-	<div class="content">
-			<div class="pure-g">
-				<div class="l-box-lrg pure-u-1 pure-u-md-2-5">
-					<form class="pure-form pure-form-stacked">
-						<fieldset>
-						<form action="auth" method="post">
-							<input type="email" id="email" placeholder="Email" required>
-							<input type="password" id="password" placeholder="Password" required>
-							<input type="submit">
-							</form>
-						</fieldset>
-					</form>
-				</div>
-
-			</div>
-
-		</div>
-</body>
+	</body>
 </html>
