@@ -19,7 +19,7 @@
         <a class="pure-menu-heading" href="">Video Game Recommendation List</a>
 
         <ul class="pure-menu-list">
-            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Dashboard</a></li>
+            <li class="pure-menu-item"><a href="/dashboard" class="pure-menu-link">Dashboard</a></li>
             <li class="pure-menu-item pure-menu-selected"><a href="/account" class="pure-menu-link">Account</a></li>
         </ul>
     </div>
@@ -31,8 +31,26 @@
 
         <div class="pure-g">
             <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
-
-                
+                <h3 class="content-subhead">
+                    Change Email
+                </h3>
+				<form action="/changeEmail" method="POST">
+				<input type="email" name="oldmail" placeholder="Enter old Email" required>
+				<input type="email" name="newmail" placeholder="Enter new Email" required>
+				<input type="password" name="password" placeholder="Password" required>
+				<input type="submit">
+				</form>
+            </div>
+			<div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+                <h3 class="content-subhead">
+                    Change Password
+                </h3>
+				<form action="/changeWord" method="POST">
+				<input type="email" name="email" placeholder="Enter Email" required>
+				<input type="password" name="oldword" placeholder="Enter old Password" required>
+				<input type="password" name="newword" placeholder="Enter new Password" required>
+				<input type="submit">
+				</form>
             </div>
         </div>
     </div>

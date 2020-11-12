@@ -78,6 +78,68 @@ app.post('/register', function(request, response) {
 	}
 });
 
+app.post('/changeEmail', function(request, response) {
+	var oldmail = request.body.oldmail;
+	var newmail = request.body.newmail;
+	var password = request.body.password;
+	if (oldmail && password && newmail) {
+		var sql1 = "SELECT * FROM user WHERE email = ? AND password = ?";
+		connection.query(sql1, [oldmail, password], function(error, results, fields) {
+			if (error) {
+     console.log(error);
+}
+			if (results.length > 0) {
+				var sql2 = "UPDATE user SET email = ? WHERE email = ? AND password = ?";
+				connection.query(sql2, [newmail, oldmail, password], function(error, results, fields) {
+					if (error) {
+     console.log(error);
+}
+					
+						response.redirect('/dashboard');
+						response.end();
+				});
+			} else {
+				response.send('Incorrect Username and/or Password!');
+				response.end();
+			}			
+		});
+	} else {
+		response.send('Please enter Username and Password!');
+		response.end();
+	}
+});
+
+app.post('/changeWord', function(request, response) {
+	var email = request.body.email;
+	var oldword = request.body.oldword;
+	var newword = request.body.newword;
+	if (email && oldword && newword) {
+		var sql1 = "SELECT * FROM user WHERE email = ? AND password = ?";
+		connection.query(sql1, [email, oldword], function(error, results, fields) {
+			if (error) {
+     console.log(error);
+}
+			if (results.length > 0) {
+				var sql2 = "UPDATE user SET password = ? WHERE email = ? AND password = ?";
+				connection.query(sql2, [newword, email, oldword], function(error, results, fields) {
+					if (error) {
+     console.log(error);
+}
+					
+						response.redirect('/dashboard');
+						response.end();
+				});
+			} else {
+				response.send('Incorrect Username and/or Password!');
+				response.end();
+			}			
+		});
+	} else {
+		response.send('Please enter Username and Password!');
+		response.end();
+	}
+});
+
 app.listen(3000);
 app.use('/node_modules',  express.static(__dirname + '/node_modules'));
 app.use('/style',  express.static(__dirname + '/style'));
