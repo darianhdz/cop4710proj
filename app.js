@@ -9,6 +9,8 @@ var bodyParser = require('body-parser');
 var path = require('path');
 var app = express();
 
+const SteamApi = require('web-api-steam');
+
 var engine = require('consolidate');
 app.engine('html', require('ejs').renderFile);
 
