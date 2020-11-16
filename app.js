@@ -1,178 +1,108 @@
-//https://codehandbook.org/web-app-using-node-js-and-mysql/
-//Starting code for node.js
-//https://codeshack.io/basic-login-system-nodejs-express-mysql/
-//For login authentication
+var express = require('express')
+  , passport = require('passport')
+  , util = require('util')
+  , session = require('express-session')
+  , SteamStrategy = require('./').Strategy;
 
-var express = require('express');
-var session = require('express-session');
-var bodyParser = require('body-parser');
-var path = require('path');
+// Passport session setup.
+//   To support persistent login sessions, Passport needs to be able to
+//   serialize users into and deserialize users out of the session.  Typically,
+//   this will be as simple as storing the user ID when serializing, and finding
+//   the user by ID when deserializing.  However, since this example does not
+//   have a database of user records, the complete Steam profile is serialized
+//   and deserialized.
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(obj, done) {
+  done(null, obj);
+});
+
+// Use the SteamStrategy within Passport.
+//   Strategies in passport require a `validate` function, which accept
+//   credentials (in this case, an OpenID identifier and profile), and invoke a
+//   callback with a user object.
+passport.use(new SteamStrategy({
+    returnURL: 'http://localhost:3000/auth/steam/return',
+    realm: 'http://localhost:3000/',
+    apiKey: '8D52CB2267D4B6DFC81D4E2D344C0E65'
+  },
+  function(identifier, profile, done) {
+    // asynchronous verification, for effect...
+    process.nextTick(function () {
+
+      // To keep the example simple, the user's Steam profile is returned to
+      // represent the logged-in user.  In a typical application, you would want
+      // to associate the Steam account with a user record in your database,
+      // and return that user instead.
+      profile.identifier = identifier;
+      return done(null, profile);
+    });
+  }
+));
+
 var app = express();
 
-const SteamApi = require('web-api-steam');
-
-var engine = require('consolidate');
-app.engine('html', require('ejs').renderFile);
+// configure Express
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
 
 app.use(session({
-	secret: 'secret',
-	resave: true,
-	saveUninitialized: true
-}));
-var mysql = require('mysql');
-var connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'password',
-  database : 'gamerecs'
+    secret: 'your secret',
+    name: 'name of session id',
+    resave: true,
+    saveUninitialized: true}));
+
+// Initialize Passport!  Also use passport.session() middleware, to support
+// persistent login sessions (recommended).
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(express.static(__dirname + '/../../public'));
+
+app.get('/', function(req, res){
+  res.render('index', { user: req.user });
 });
 
-app.use(bodyParser.urlencoded({extended : true}));
-app.use(bodyParser.json());
-
-app.post('/auth', function(request, response) {
-	var username = request.body.username;
-	var password = request.body.password;
-	console.log(username);
-	console.log(password);
-	if (username && password) {
-		var sql = "SELECT * FROM user WHERE email = ? AND password = ?";
-		connection.query(sql, [username, password], function(error, results, fields) {
-			if (error) {
-     console.log(error);
-}
-			if (results.length > 0) {
-				request.session.loggedin = true;
-				request.session.username = username;
-				response.redirect('/dashboard');
-			} else {
-				response.send('Incorrect Username and/or Password!');
-			}			
-			response.end();
-		});
-	} else {
-		response.send('Please enter Username and Password!');
-		response.end();
-	}
+app.get('/account', ensureAuthenticated, function(req, res){
+  res.render('account', { user: req.user });
 });
 
-app.post('/register', function(request, response) {
-	var username = request.body.username;
-	var password = request.body.password;
-	console.log(username);
-	console.log(password);
-	if (username && password) {
-		var sql = "INSERT INTO user(User_ID_Steam, email, password) VALUES ('NULL', '"+username+"', '"+password+"')";
-		connection.query(sql, [username, password], function(error, results, fields) {
-			if (error) {
-     console.log(error);
-}
-			
-				request.session.loggedin = true;
-				request.session.username = username;
-				response.redirect('/dashboard');
-					
-			response.end();
-		});
-	} else {
-		response.send('Please enter Username and Password!');
-		response.end();
-	}
+app.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
 });
 
-app.post('/changeEmail', function(request, response) {
-	var oldmail = request.body.oldmail;
-	var newmail = request.body.newmail;
-	var password = request.body.password;
-	if (oldmail && password && newmail) {
-		var sql1 = "SELECT * FROM user WHERE email = ? AND password = ?";
-		connection.query(sql1, [oldmail, password], function(error, results, fields) {
-			if (error) {
-     console.log(error);
-}
-			if (results.length > 0) {
-				var sql2 = "UPDATE user SET email = ? WHERE email = ? AND password = ?";
-				connection.query(sql2, [newmail, oldmail, password], function(error, results, fields) {
-					if (error) {
-     console.log(error);
-}
-					
-						response.redirect('/dashboard');
-						response.end();
-				});
-			} else {
-				response.send('Incorrect Username and/or Password!');
-				response.end();
-			}			
-		});
-	} else {
-		response.send('Please enter Username and Password!');
-		response.end();
-	}
-});
+// GET /auth/steam
+//   Use passport.authenticate() as route middleware to authenticate the
+//   request.  The first step in Steam authentication will involve redirecting
+//   the user to steamcommunity.com.  After authenticating, Steam will redirect the
+//   user back to this application at /auth/steam/return
+app.get('/auth/steam',
+  passport.authenticate('steam', { failureRedirect: '/' }),
+  function(req, res) {
+    res.redirect('/');
+  });
 
-app.post('/changeWord', function(request, response) {
-	var email = request.body.email;
-	var oldword = request.body.oldword;
-	var newword = request.body.newword;
-	if (email && oldword && newword) {
-		var sql1 = "SELECT * FROM user WHERE email = ? AND password = ?";
-		connection.query(sql1, [email, oldword], function(error, results, fields) {
-			if (error) {
-     console.log(error);
-}
-			if (results.length > 0) {
-				var sql2 = "UPDATE user SET password = ? WHERE email = ? AND password = ?";
-				connection.query(sql2, [newword, email, oldword], function(error, results, fields) {
-					if (error) {
-     console.log(error);
-}
-					
-						response.redirect('/dashboard');
-						response.end();
-				});
-			} else {
-				response.send('Incorrect Username and/or Password!');
-				response.end();
-			}			
-		});
-	} else {
-		response.send('Please enter Username and Password!');
-		response.end();
-	}
-});
+// GET /auth/steam/return
+//   Use passport.authenticate() as route middleware to authenticate the
+//   request.  If authentication fails, the user will be redirected back to the
+//   login page.  Otherwise, the primary route function function will be called,
+//   which, in this example, will redirect the user to the home page.
+app.get('/auth/steam/return',
+  passport.authenticate('steam', { failureRedirect: '/' }),
+  function(req, res) {
+    res.redirect('/');
+  });
 
 app.listen(3000);
-app.use('/node_modules',  express.static(__dirname + '/node_modules'));
-app.use('/style',  express.static(__dirname + '/style'));
-app.use('/script',  express.static(__dirname + '/script'));
 
-
-app.get('/',function(req,res){
-    res.sendFile(path.join(__dirname + '/templates/home.html'));
-})
-
-app.get('/account',function(req,res){
-    res.sendFile('account.html',{'root': __dirname + '/templates'});
-})
-
-app.get('/dashboard',function(req,res){
-	if(req.session.loggedin == true)
-	{
-	var name = req.session.username;
-	res.render( __dirname + '/templates/dashboard.html', {name: name});
-	}
-	else
-	{
-		res.send('Login to see this page');
-	}
-})
-
-app.get('/showSignInPage',function(req,res){
-    res.sendFile('signin.html',{'root': __dirname + '/templates'});
-})
-
-app.get('/showSignUpPage',function(req,res){
-  res.sendFile('signup.html',{'root':__dirname + '/templates'})
-})
-
+// Simple route middleware to ensure user is authenticated.
+//   Use this route middleware on any resource that needs to be protected.  If
+//   the request is authenticated (typically via a persistent login session),
+//   the request will proceed.  Otherwise, the user will be redirected to the
+//   login page.
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  res.redirect('/');
+}

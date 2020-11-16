@@ -1,42 +1,61 @@
 {
-  "name": "swipe1",
-  "version": "1.0.0",
-  "description": "test 1 for swipe app",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+  "name": "passport-steam",
+  "version": "1.0.14",
+  "description": "Steam (OpenID 2) authentication strategy for PassportJS.",
+  "author": {
+    "name": "Liam Curry",
+    "email": "liam@curry.name",
+    "url": "http://www.liamcurry.com/"
+  },
+  "contributors": [
+    {
+      "name": "Toby Archer",
+      "email": "toby@nerdping.com",
+      "url": "http://github.com/mnzt"
+    },
+    {
+      "name": "Welps",
+      "url": "https://github.com/welps"
+    }
+  ],
+  "ava": {
+    "failFast": true,
+    "verbose": true
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/darianhdz/cop4710proj.git"
+    "url": "git://github.com/liamcurry/passport-steam.git"
   },
-  "keywords": [
-    "project"
-  ],
-  "author": "Darian",
-  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/darianhdz/cop4710proj/issues"
+    "url": "http://github.com/liamcurry/passport-steam/issues"
   },
-  "homepage": "https://github.com/darianhdz/cop4710proj#readme",
+  "main": "./lib/passport-steam",
   "dependencies": {
-    "body-parser": "^1.19.0",
-    "bootstrap": "^4.5.3",
-    "consolidate": "^0.16.0",
-    "cookie-parser": "^1.4.5",
-    "cookie-session": "^1.4.0",
-    "ejs": "^3.1.5",
-    "express": "^4.17.1",
-    "express-session": "^1.17.1",
-    "jquery": "^1.9.1",
-    "mustache": "^4.0.1",
-    "mysql": "^2.18.1",
-    "popper.js": "^1.16.1",
-    "purecss": "^2.0.3",
-    "steam-login": "^0.1.7",
-    "web-api-steam": "^1.0.8"
+    "@passport-next/passport-openid": "^1.0.0",
+    "steam-web": "0.4.0"
   },
   "devDependencies": {
-    "csstyle": "^2.0.2"
-  }
+    "ava": "^0.10.0",
+    "ejs": "^2.4.2",
+    "express": "^4.14.0",
+    "express-session": "^1.13.0",
+    "passport": "^0.3.2"
+  },
+  "engines": {
+    "node": ">= 0.4.0"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/MIT"
+    }
+  ],
+  "keywords": [
+    "passport",
+    "steam",
+    "auth",
+    "authn",
+    "authentication",
+    "identity"
+  ]
 }
