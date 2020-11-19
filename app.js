@@ -5,6 +5,9 @@
 
 var express = require('express');
 var session = require('express-session');
+var passport = require('passport');
+var util = require('util');
+var SteamStrategy = require('passport-steam').Strategy;
 var bodyParser = require('body-parser');
 var path = require('path');
 var app = express();
@@ -44,6 +47,7 @@ app.post('/auth', function(request, response) {
 			if (results.length > 0) {
 				request.session.loggedin = true;
 				request.session.username = username;
+				request.session.password = password;
 				response.redirect('/dashboard');
 			} else {
 				response.send('Incorrect Username and/or Password!');
@@ -70,6 +74,7 @@ app.post('/register', function(request, response) {
 			
 				request.session.loggedin = true;
 				request.session.username = username;
+				request.session.password = password;
 				response.redirect('/dashboard');
 					
 			response.end();
@@ -175,4 +180,90 @@ app.get('/showSignInPage',function(req,res){
 app.get('/showSignUpPage',function(req,res){
   res.sendFile('signup.html',{'root':__dirname + '/templates'})
 })
+
+app.get('/steamIn',function(req,res){
+    res.sendFile('steam.html',{'root': __dirname + '/templates'});
+})
+
+
+
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(obj, done) {
+  done(null, obj);
+});
+
+
+passport.use(new SteamStrategy({
+    returnURL: 'http://localhost:3000/auth/steam/return',
+    realm: 'http://localhost:3000/',
+    apiKey: '8D52CB2267D4B6DFC81D4E2D344C0E65'
+  },
+  function(identifier, profile, done) {
+    // asynchronous verification, for effect...
+    process.nextTick(function () {
+
+      // To keep the example simple, the user's Steam profile is returned to
+      // represent the logged-in user.  In a typical application, you would want
+      // to associate the Steam account with a user record in your database,
+      // and return that user instead.
+      profile.identifier = identifier;
+      return done(null, profile);
+    });
+  }
+));
+
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(express.static(__dirname + '/../../public'));
+
+app.get('/steamSignIn', function(req, res){
+  res.render('index', { user: req.user });
+});
+
+app.get('/auth/steam',
+  passport.authenticate('steam', { failureRedirect: '/' }),
+  function(req, res) {
+    res.redirect('/steamSignIn');
+  });
+  
+  app.get('/auth/steam/return',
+  passport.authenticate('steam', { failureRedirect: '/' }),
+  function(req, res) {
+	console.log(req.user.id);
+	console.log(req.session.username);
+	console.log(req.session.password);
+	var email = req.session.username;
+	var password = req.session.password;
+	var user_id = req.user.id;
+	if(email && password && user_id)
+	{
+		var sql = "UPDATE user SET User_ID_Steam = ? WHERE email = ? AND password = ?";
+		connection.query(sql, [user_id, email, password], function(error, results, fields) {
+					
+					
+						res.redirect('/dashboard');
+						res.end();
+				});
+	}
+  });
+  
+  function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  res.redirect('/dashboard');
+}
+
+app.get('/createList', function(req,res) {
+	res.sendFile('createList.html',{'root': __dirname + '/templates'});
+});
+
+app.get('/getGames', function(req,res) {
+	res.sendFile('createList.html',{'root': __dirname + '/templates'});
+});
+
+
 
