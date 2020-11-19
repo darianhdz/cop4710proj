@@ -11,6 +11,9 @@ var SteamStrategy = require('passport-steam').Strategy;
 var bodyParser = require('body-parser');
 var path = require('path');
 var app = express();
+var SteamStore = require('steam-store');
+var store = new SteamStore();
+var parse = require('csv-parse/lib/sync');
 
 const SteamApi = require('web-api-steam');
 
@@ -234,9 +237,6 @@ app.get('/auth/steam',
   app.get('/auth/steam/return',
   passport.authenticate('steam', { failureRedirect: '/' }),
   function(req, res) {
-	console.log(req.user.id);
-	console.log(req.session.username);
-	console.log(req.session.password);
 	var email = req.session.username;
 	var password = req.session.password;
 	var user_id = req.user.id;
@@ -258,12 +258,40 @@ app.get('/auth/steam',
 }
 
 app.get('/createList', function(req,res) {
-	res.sendFile('createList.html',{'root': __dirname + '/templates'});
+	var sql = "SELECT User_ID_Steam FROM user WHERE email = ? and password = ?";
+	connection.query(sql, [req.session.username, req.session.password], function(error, results, fields) {
+		console.log(results[0].User_ID_Steam);
+		req.session.id = results[0].User_ID_Steam;
+		SteamApi.getOwnedGames(results[0].User_ID_Steam, '8D52CB2267D4B6DFC81D4E2D344C0E65', (err, data) => {
+		if(err) throw err;
+		var x = JSON.parse(data);
+		req.session.data = x;
+		res.redirect('/genreCount'); //changing this to redirect to viewList later
+		res.end();
+	});
+	});
+});
+
+app.get('/genreCount', function(req, res) {
+	var datum = req.session.data;
+	for(var i = 0; i < datum.response.game_count; i++)
+	{
+		var s = datum.response.games[i].appid;
+		console.log(s);
+		/*SteamApi.other(s, (err, data) => {
+			if(err) throw(err);
+			var x = JSON.parse(data);
+			console.log(x[t].data.genres[0].description);
+			//note to future self: access returned data : var x = JSON.parse(data);
+			//console.log(x[datum.games[0].appid].data.genres[0].description);
+		});*/
+		//SPINNING OFF ABOVE FUNCTION INTO OWN SEPERATE METHOD MAYBE THAT WILL FIX ISSUES
+
+	}
 });
 
 app.get('/getGames', function(req,res) {
 	res.sendFile('createList.html',{'root': __dirname + '/templates'});
 });
-
 
 
