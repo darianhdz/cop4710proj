@@ -266,7 +266,7 @@ app.get('/createList', function(req,res) {
 		if(err) throw err;
 		var x = JSON.parse(data);
 		req.session.data = x;
-		res.redirect('/genreCount'); //changing this to redirect to viewList later
+		res.redirect('/genreCount'); 
 		res.end();
 	});
 	});
@@ -274,23 +274,18 @@ app.get('/createList', function(req,res) {
 
 app.get('/genreCount', function(req, res) {
 	var datum = req.session.data;
+	console.log(datum);
 	datum.response.games.forEach(function(listItem, index){
 		console.log(listItem.appid);
-		var x = steamOther(listItem.appid);
-		console.log(x);
-	});
-});
-
-function steamOther(num) {
-	
-	SteamApi.other(num, (err, data) => {
+		SteamApi.other(listItem.appid, (err, data) => {
 			if(err) throw(err);
 			let x = JSON.parse(data);
-			return (x[num].data.genres[0].description);
+			console.log(x[listItem.appid].data.genres[0].description);
 			//note to future self: access returned data : var x = JSON.parse(data);
 			//console.log(x[datum.games[0].appid].data.genres[0].description);
 		});
-}
+	});
+});
 
 app.get('/getGames', function(req,res) {
 	res.sendFile('createList.html',{'root': __dirname + '/templates'});
