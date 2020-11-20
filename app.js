@@ -274,21 +274,23 @@ app.get('/createList', function(req,res) {
 
 app.get('/genreCount', function(req, res) {
 	var datum = req.session.data;
-	for(var i = 0; i < datum.response.game_count; i++)
-	{
-		var s = datum.response.games[i].appid;
-		console.log(s);
-		/*SteamApi.other(s, (err, data) => {
+	datum.response.games.forEach(function(listItem, index){
+		console.log(listItem.appid);
+		var x = steamOther(listItem.appid);
+		console.log(x);
+	});
+});
+
+function steamOther(num) {
+	
+	SteamApi.other(num, (err, data) => {
 			if(err) throw(err);
-			var x = JSON.parse(data);
-			console.log(x[t].data.genres[0].description);
+			let x = JSON.parse(data);
+			return (x[num].data.genres[0].description);
 			//note to future self: access returned data : var x = JSON.parse(data);
 			//console.log(x[datum.games[0].appid].data.genres[0].description);
-		});*/
-		//SPINNING OFF ABOVE FUNCTION INTO OWN SEPERATE METHOD MAYBE THAT WILL FIX ISSUES
-
-	}
-});
+		});
+}
 
 app.get('/getGames', function(req,res) {
 	res.sendFile('createList.html',{'root': __dirname + '/templates'});
