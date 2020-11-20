@@ -273,16 +273,13 @@ app.get('/createList', function(req,res) {
 });
 
 app.get('/genreCount', function(req, res) {
-	var datum = req.session.data;
-	console.log(datum);
+	let datum = req.session.data;
 	datum.response.games.forEach(function(listItem, index){
 		console.log(listItem.appid);
 		SteamApi.other(listItem.appid, (err, data) => {
 			if(err) throw(err);
 			let x = JSON.parse(data);
 			console.log(x[listItem.appid].data.genres[0].description);
-			//note to future self: access returned data : var x = JSON.parse(data);
-			//console.log(x[datum.games[0].appid].data.genres[0].description);
 		});
 	});
 });
