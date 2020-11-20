@@ -1,0 +1,43 @@
+First off, the only file you need to be concerned with is app.js
+Most of the html is finished, and there is still one (?) page left to be created, which I can do pretty easily.
+The page/html file is the presentation of the list, with swiping(potentially, if time gets a little tight i'm abandoning it)
+So that leaves us with the swiping algorithm left to do.
+heres some psuedo code/just rambling for how i think it should work:
+Assumptions: we have access to the genre counters, with the top 3 tags being associated with the user in the table in some way, also that we just have the database on hand
+also that each game has up to three genres, so we need to configure the games table so that there is 3 genre columns, and if a game does not have enough genres to fill the three, we fill the empty ones with null
+
+ask user to rank their top 3 genres that we found
+reassign tags in the table to be reflective of that EX: if tag1 was horror but user ranked it as their least favorite, horror is now assigned to tag3
+sql statements(in order) 
+
+okay so Im writing this and realize it doesnt have to be the most amazing thing ever so Im gonna advocate for this:
+				select names and covers of games wehre all 3 tags match, dont worry about the permutations of tags when searching though we dont have to do that
+				move on to where two tags match, lets do tag1 and tag2, tag1 and tag3
+				then where just tag1 matches
+				then every other game
+
+
+other than algorithm, we are pretty much done
+last piece of the puzzle really
+thats if we decide to download the steam database though, it will be far more difficult if we do.
+so finally, the todo list (in order):
+	1: download steam database of games into mysql, we can accomplish this with https://github.com/deadmp/import/blob/master/fetch_parse.js something like this
+		, and then while downloading, we use appid to grab the genres https://wiki.teamfortress.com/wiki/User:RJackson/StorefrontAPI, 
+			genres is stored into an array that i think we can get the length of so we can just use a for loop
+			thats initialized with the array length, and then use 3-genresFound to determine how many nulls to insert for the rest of the tags columns in all games
+			if thats confusing im sorry ask me for clarification
+	2: assuming that went off without a hitch(lol) we move on to the algorithm creation stage. Here, we actually create the algorithm in js and put it into its own function in app.js
+		,and the first thing we do is still get the games that the user owns, but this time it is just simple counting of genres after using queries in the all_games table to check app_ids
+		move on from there to the actual algorithm
+	3: so we've created the algorithm, and it works when we output text to the console. great, now we have to create the html file for the presentation factor
+		from the appdetails, we also receive a hash that, when combined with the formatted url from steam, gives us the cover of the game, so we will have that in the center, with the title under it
+		arrows to left and right of it, depending on which one is clicked, algorithm decides which tags to drop and which to keep for next search.
+		
+		
+		
+		
+		ALSO
+		we might need a new version of the tables to accomodate for the new all_games idea
+		we will need a new varchar called hash to keep the hash for the image address
+		also we will need three columns for genres in all_games
+		
