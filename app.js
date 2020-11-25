@@ -257,6 +257,7 @@ app.get('/auth/steam',
   res.redirect('/dashboard');
 }
 
+
 app.get('/createList', function(req,res) {
 	var sql = "SELECT User_ID_Steam FROM user WHERE email = ? and password = ?";
 	connection.query(sql, [req.session.username, req.session.password], function(error, results, fields) {

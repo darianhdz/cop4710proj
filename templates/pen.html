@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $("button").click(function(){
+	$.ajax({url: "http://steamtagchoose.apphb.com/api/SteamApp/440", error: function(xhr){
+      alert("An error occured: " + xhr.status + " " + xhr.statusText);
+    }});
+  });
+});
+</script>
+</head>
+<body>
+<button>Click me</button>
+
+</body>
+</html>
