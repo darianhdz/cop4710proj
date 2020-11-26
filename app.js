@@ -267,7 +267,8 @@ app.get('/createList', function(req,res) {
 		if(err) throw err;
 		var x = JSON.parse(data);
 		req.session.data = x;
-		res.redirect('/genreCount'); 
+		console.log(x);
+		res.redirect('/dashboard'); 
 		res.end();
 	});
 	});
