@@ -44,18 +44,18 @@ app.post('/auth', function(request, response) {
 	if (username && password) {
 		var sql = "SELECT * FROM user WHERE email = ? AND password = ?";
 		connection.query(sql, [username, password], function(error, results, fields) {
-			if (error) {
-     console.log(error);
-}
-			if (results.length > 0) {
-				request.session.loggedin = true;
-				request.session.username = username;
-				request.session.password = password;
-				response.redirect('/dashboard');
-			} else {
-				response.send('Incorrect Username and/or Password!');
-			}			
-			response.end();
+		if (error) {
+	 		console.log(error);
+		}
+		if (results.length > 0) {
+			request.session.loggedin = true;
+			request.session.username = username;
+			request.session.password = password;
+			response.redirect('/dashboard');
+		} else {
+			response.send('Incorrect Username and/or Password!');
+		}
+		response.end();
 		});
 	} else {
 		response.send('Please enter Username and Password!');
@@ -72,14 +72,12 @@ app.post('/register', function(request, response) {
 		var sql = "INSERT INTO user(User_ID_Steam, email, password) VALUES ('NULL', '"+username+"', '"+password+"')";
 		connection.query(sql, [username, password], function(error, results, fields) {
 			if (error) {
-     console.log(error);
-}
-			
-				request.session.loggedin = true;
-				request.session.username = username;
-				request.session.password = password;
-				response.redirect('/dashboard');
-					
+				console.log(error); 
+			}
+			request.session.loggedin = true;
+			request.session.username = username;
+			request.session.password = password;
+			response.redirect('/dashboard');
 			response.end();
 		});
 	} else {
@@ -96,17 +94,16 @@ app.post('/changeEmail', function(request, response) {
 		var sql1 = "SELECT * FROM user WHERE email = ? AND password = ?";
 		connection.query(sql1, [oldmail, password], function(error, results, fields) {
 			if (error) {
-     console.log(error);
-}
+     			console.log(error);
+			}
 			if (results.length > 0) {
 				var sql2 = "UPDATE user SET email = ? WHERE email = ? AND password = ?";
 				connection.query(sql2, [newmail, oldmail, password], function(error, results, fields) {
 					if (error) {
-     console.log(error);
-}
-					
-						response.redirect('/dashboard');
-						response.end();
+						console.log(error);
+					}
+					response.redirect('/dashboard');
+					response.end();
 				});
 			} else {
 				response.send('Incorrect Username and/or Password!');
@@ -127,17 +124,16 @@ app.post('/changeWord', function(request, response) {
 		var sql1 = "SELECT * FROM user WHERE email = ? AND password = ?";
 		connection.query(sql1, [email, oldword], function(error, results, fields) {
 			if (error) {
-     console.log(error);
-}
+     			console.log(error);
+			}
 			if (results.length > 0) {
 				var sql2 = "UPDATE user SET password = ? WHERE email = ? AND password = ?";
 				connection.query(sql2, [newword, email, oldword], function(error, results, fields) {
 					if (error) {
-     console.log(error);
-}
-					
-						response.redirect('/dashboard');
-						response.end();
+     					console.log(error);
+					}
+					response.redirect('/dashboard');
+					response.end();
 				});
 			} else {
 				response.send('Incorrect Username and/or Password!');
@@ -155,7 +151,6 @@ app.use('/node_modules',  express.static(__dirname + '/node_modules'));
 app.use('/style',  express.static(__dirname + '/style'));
 app.use('/script',  express.static(__dirname + '/script'));
 
-
 app.get('/',function(req,res){
     res.sendFile(path.join(__dirname + '/templates/home.html'));
 })
@@ -165,13 +160,10 @@ app.get('/account',function(req,res){
 })
 
 app.get('/dashboard',function(req,res){
-	if(req.session.loggedin == true)
-	{
-	var name = req.session.username;
-	res.render( __dirname + '/templates/dashboard.html', {name: name});
-	}
-	else
-	{
+	if(req.session.loggedin == true) {
+		var name = req.session.username;
+		res.render( __dirname + '/templates/dashboard.html', {name: name});
+	} else {
 		res.send('Login to see this page');
 	}
 })
@@ -188,8 +180,6 @@ app.get('/steamIn',function(req,res){
     res.sendFile('steam.html',{'root': __dirname + '/templates'});
 })
 
-
-
 passport.serializeUser(function(user, done) {
   done(null, user);
 });
@@ -197,7 +187,6 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
-
 
 passport.use(new SteamStrategy({
     returnURL: 'http://localhost:3000/auth/steam/return',
@@ -240,15 +229,12 @@ app.get('/auth/steam',
 	var email = req.session.username;
 	var password = req.session.password;
 	var user_id = req.user.id;
-	if(email && password && user_id)
-	{
+	if(email && password && user_id) {
 		var sql = "UPDATE user SET User_ID_Steam = ? WHERE email = ? AND password = ?";
 		connection.query(sql, [user_id, email, password], function(error, results, fields) {
-					
-					
-						res.redirect('/dashboard');
-						res.end();
-				});
+			res.redirect('/dashboard');
+			res.end();
+		});
 	}
   });
   
@@ -256,7 +242,6 @@ app.get('/auth/steam',
   if (req.isAuthenticated()) { return next(); }
   res.redirect('/dashboard');
 }
-
 
 app.get('/createList', function(req,res) {
 	var sql = "SELECT User_ID_Steam FROM user WHERE email = ? and password = ?";
