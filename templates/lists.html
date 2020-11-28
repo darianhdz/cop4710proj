@@ -1,0 +1,61 @@
+<!-- CODE IS NOT MINE, SOURCED FROM https://purecss.io/layouts/ UNDER THE zLib license http://www.zlib.net/zlib_license.html -->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Game Recommendation list</title>
+	<link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css" integrity="sha384-4ZPLezkTZTsojWFhpdFembdzFudphhoOzIunR1wH6g1WQDzCAiPvDyitaK67mp0+" crossorigin="anonymous">
+    <link rel="stylesheet" href="/node_modules/purecss/build/pure-min.css">
+    <link rel="stylesheet" href="/node_modules/purecss/build/grids-responsive-min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <link rel="stylesheet" href="/style/styles.css">
+</head>
+<body>
+
+<div class="header">
+    <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+        <a class="pure-menu-heading" href="">Video Game Recommendation List</a>
+
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item"><a href="/dashboard" class="pure-menu-link">Dashboard</a></li>
+            <li class="pure-menu-item"><a href="/account" class="pure-menu-link">Account</a></li>
+			<li class="pure-menu-item"><a href="/createListPage" class="pure-menu-link">List Creator</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="acc">
+    <div class="content">
+        <h2 class="content-head is-center">View List</h2>
+		<table>
+        <tr>
+            <th>Image</th>
+			<th>Name</th>
+        </tr>
+        
+        <%
+		var url1 = 'https://steamcdn-a.akamaihd.net/steam/apps/';
+		var url2 = '/header.jpg';
+        if(list.length!=0){
+        list.forEach(function(data){
+		var urlImg = url1 + data.Game_ID + url2;
+        %>
+        <tr>
+			<td><img class="logo" src= <%=urlImg%> alt="My_Logo"></td>
+            <td><%=data.Name %></td>
+        </tr>
+		<%	}); %>
+        <% } else{ %>
+            <tr>
+                <td colspan="7">No Data Found</td>
+            </tr>
+        <% } %>
+		</table>
+    </div>
+    
+</div>
+
+</body>
+</html>

@@ -179,6 +179,14 @@ app.get('/account',function(req,res){
     res.sendFile('account.html',{'root': __dirname + '/templates'});
 })
 
+app.get('/viewList', function(req, res) {
+	var sql = "SELECT * FROM recommendation_list WHERE User_User_ID_Steam = ?";
+	connection.query(sql, [req.session.steamid], function(error, results, fields) {
+		if(error){console.log(error);}
+		res.render(__dirname + '/templates/lists.html', {list: results});	
+	});		
+});
+
 app.get('/dashboard',function(req,res){
 	if(req.session.loggedin == true) {
 		var name = req.session.username;
