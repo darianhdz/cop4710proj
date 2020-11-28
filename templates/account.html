@@ -21,7 +21,7 @@
         <ul class="pure-menu-list">
             <li class="pure-menu-item"><a href="/dashboard" class="pure-menu-link">Dashboard</a></li>
             <li class="pure-menu-item pure-menu-selected"><a href="/account" class="pure-menu-link">Account</a></li>
-			<li class="pure-menu-item"><a href="/createList" class="pure-menu-link">List Creator</a></li>
+			<li class="pure-menu-item"><a href="/createListPage" class="pure-menu-link">List Creator</a></li>
         </ul>
     </div>
 </div>
@@ -50,6 +50,16 @@
 				<input type="email" name="email" placeholder="Enter Email" required>
 				<input type="password" name="oldword" placeholder="Enter old Password" required>
 				<input type="password" name="newword" placeholder="Enter new Password" required>
+				<input type="submit">
+				</form>
+            </div>
+			<div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+                <h3 class="content-subhead">
+                    Delete Account
+                </h3>
+				<form action="/remove" method="POST">
+				<input type="email" name="email" placeholder="Enter Email" required>
+				<input type="password" name="password" placeholder="Enter Password" required>
 				<input type="submit">
 				</form>
             </div>

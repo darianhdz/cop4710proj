@@ -19,24 +19,31 @@
         <a class="pure-menu-heading" href="">Video Game Recommendation List</a>
 
         <ul class="pure-menu-list">
-            <li class="pure-menu-item pure-menu-selected"><a href="#" class="pure-menu-link">Dashboard</a></li>
+            <li class="pure-menu-item"><a href="/dashboard" class="pure-menu-link">Dashboard</a></li>
             <li class="pure-menu-item"><a href="/account" class="pure-menu-link">Account</a></li>
 			<li class="pure-menu-item"><a href="/createListPage" class="pure-menu-link">List Creator</a></li>
         </ul>
     </div>
 </div>
 
-<div class="splash-container">
-    <div class="splash">
-        <h1 class="splash-head">Welcome back <%=name%></h1>
-        <p>
-            <a href="/createListPage" class="pure-button pure-button-primary">Create New List</a>
-			<a href="/viewList" class="pure-button pure-button-primary">View List</a>
-			<a href="/steamIn" class="pure-button pure-button-primary">Sign In with Steam</a>
-        </p>
+<div class="acc">
+    <div class="content">
+        <h2 class="content-head is-center">Create Lists</h2>
+		<h1><%=data%></h1>
+        <div class="pure-g">
+            
+				<img class="logo" src= <%=urlImg%> alt="My_Logo">
+				
+				<form action="/builderYes" method="POST">
+				<input type="submit" value = "Interested">
+				</form>
+				<form action="/builderNo" method="POST">
+				<input type="submit" value = "Not Interested">
+				</form>
+        </div>
     </div>
+    
 </div>
-
 
 </body>
 </html>

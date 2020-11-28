@@ -146,6 +146,26 @@ app.post('/changeWord', function(request, response) {
 	}
 });
 
+app.post('/remove', function(request, response) {
+	var email = request.body.email;
+	var password = request.body.password;
+	if (email && password) {
+		var sql1 = "DELETE FROM user WHERE email = ? AND password = ?";
+		connection.query(sql1, [email, password], function(error, results, fields) {
+			if (error) {
+     			console.log(error);
+			}
+			
+				response.redirect('/');
+				response.end();
+						
+		});
+	} else {
+		response.send('Please enter Username and Password!');
+		response.end();
+	}
+});
+
 app.listen(3000);
 app.use('/node_modules',  express.static(__dirname + '/node_modules'));
 app.use('/style',  express.static(__dirname + '/style'));
@@ -179,6 +199,10 @@ app.get('/showSignUpPage',function(req,res){
 app.get('/steamIn',function(req,res){
     res.sendFile('steam.html',{'root': __dirname + '/templates'});
 })
+
+app.get('/createListPage' ,function(req,res){
+	res.sendFile('createList.html', {'root': __dirname + '/templates'});
+});
 
 passport.serializeUser(function(user, done) {
   done(null, user);
@@ -229,6 +253,7 @@ app.get('/auth/steam',
 	var email = req.session.username;
 	var password = req.session.password;
 	var user_id = req.user.id;
+	req.session.steamid = user_id;
 	if(email && password && user_id) {
 		var sql = "UPDATE user SET User_ID_Steam = ? WHERE email = ? AND password = ?";
 		connection.query(sql, [user_id, email, password], function(error, results, fields) {
@@ -243,32 +268,224 @@ app.get('/auth/steam',
   res.redirect('/dashboard');
 }
 
-app.get('/createList', function(req,res) {
-	var sql = "SELECT User_ID_Steam FROM user WHERE email = ? and password = ?";
-	connection.query(sql, [req.session.username, req.session.password], function(error, results, fields) {
-		console.log(results[0].User_ID_Steam);
-		req.session.id = results[0].User_ID_Steam;
-		SteamApi.getOwnedGames(results[0].User_ID_Steam, '8D52CB2267D4B6DFC81D4E2D344C0E65', (err, data) => {
-		if(err) throw err;
-		var x = JSON.parse(data);
-		req.session.data = x;
-		console.log(x);
-		res.redirect('/dashboard'); 
-		res.end();
-	});
-	});
+app.post('/creator', function(req,res) {
+	//https://steamcdn-a.akamaihd.net/steam/apps/<APPID>/header.jpg format to get image of game
+	console.log(req.session.steamid);
+	var url1 = 'https://steamcdn-a.akamaihd.net/steam/apps/';
+	var url2 = '/header.jpg';
+	var user_tag1, user_tag2, user_tag3;
+	user_tag1 = req.body.tag1;
+	user_tag2 = req.body.tag2;
+	user_tag3 = req.body.tag3;
+	req.session.tag1 = user_tag1;
+	req.session.tag2 = user_tag2;
+	req.session.tag3 = user_tag3;
+	if(user_tag1 && user_tag2 && user_tag3)
+	{
+		console.log(user_tag1);
+		var sql = "SELECT all_games.Game_ID, all_games.Game_Tag1, all_games.Game_Tag2, all_games.Game_Tag3, all_games.Name FROM all_games LEFT JOIN recommendation_list ON all_games.Game_ID = recommendation_list.Game_ID WHERE recommendation_list.Game_ID IS NULL AND all_games.Game_Tag1 = ? AND all_games.Game_Tag2 = ? AND all_games.Game_Tag3 = ?";
+		connection.query(sql, [user_tag1, user_tag2, user_tag3], function(error, results, fields) {
+			if (error) {
+				console.log(error);
+			}
+			if(results.length > 0)
+			{
+				var rows = results[0].Name;
+				var hash = results[0].Game_ID;
+				var urlImg = url1 + hash + url2;
+				req.session.gamedata = results[0];
+				console.log(urlImg);
+				res.render(__dirname + '/templates/listViewer.html', {data: rows, urlImg: urlImg, id: hash});
+				console.log(req.session.gamedata.Game_ID);
+			}
+			else
+			{
+				sql = "SELECT all_games.Game_ID, all_games.Game_Tag1, all_games.Game_Tag2, all_games.Game_Tag3, all_games.Name FROM all_games LEFT JOIN recommendation_list ON all_games.Game_ID = recommendation_list.Game_ID WHERE recommendation_list.Game_ID IS NULL AND all_games.Game_Tag1 = ? AND all_games.Game_Tag2 = ?";
+				connection.query(sql, [user_tag1, user_tag2], function(error, results, fields) {
+					if (error) {
+						console.log(error);
+					}
+					if(results.length > 0)
+					{
+						var rows = results[0].Name;
+						var hash = results[0].Game_ID;
+						var urlImg = url1 + hash + url2;
+						req.session.gamedata = results[0];
+						res.render(__dirname + '/templates/listViewer.html', {data: rows, urlImg: urlImg, id: hash});
+						
+					}
+					else
+					{
+						sql = "SELECT all_games.Game_ID, all_games.Game_Tag1, all_games.Game_Tag2, all_games.Game_Tag3, all_games.Name FROM all_games LEFT JOIN recommendation_list ON all_games.Game_ID = recommendation_list.Game_ID WHERE recommendation_list.Game_ID IS NULL AND all_games.Game_Tag1 = ?";
+						connection.query(sql, [user_tag1], function(error, results, fields) {
+								if (error) {
+									console.log(error);
+								}
+								if(results.length > 0)
+								{
+									var rows = results[0].Name;
+									var hash = results[0].Game_ID;
+									var urlImg = url1 + hash + url2;
+									req.session.gamedata = results[0];
+									res.render(__dirname + '/templates/listViewer.html', {data: rows, urlImg: urlImg, id: hash});
+									
+								}
+						});
+					}
+				});
+			}
+		});
+		
+	}
+	
+	
 });
 
-app.get('/genreCount', function(req, res) {
-	let datum = req.session.data;
-	datum.response.games.forEach(function(listItem, index){
-		console.log(listItem.appid);
-		SteamApi.other(listItem.appid, (err, data) => {
-			if(err) throw(err);
-			let x = JSON.parse(data);
-			console.log(x[listItem.appid].data.genres[0].description);
-		});
+app.post('/builderYes', function(req,res) {
+	var url1 = 'https://steamcdn-a.akamaihd.net/steam/apps/';
+	var url2 = '/header.jpg';
+	var steamid = req.session.steamid;
+	var gameid = req.session.gamedata.Game_ID;
+	var name = req.session.gamedata.Name;
+	var tag1 = req.session.gamedata.Game_Tag1;
+	var tag2 = req.session.gamedata.Game_Tag2;
+	var tag3 = req.session.gamedata.Game_Tag3;
+	var sql = "SELECT * FROM recommendation_list WHERE Game_ID = ? AND User_User_ID_Steam = ?";
+	connection.query(sql, [gameid, steamid], function(error, results, fields) {
+		if(error){console.log(error)};
+		if(results.length < 1)
+		{
+			sql = "INSERT INTO recommendation_list(User_User_ID_Steam, Game_ID, Game_Tag1, Name, Game_Tag2, Game_Tag3) VALUES ('"+steamid+"', '"+gameid+"', '"+tag1+"', '"+name+"', '"+tag2+"', '"+tag3+"')";
+			connection.query(sql, [steamid, gameid, tag1, name, tag2, tag3], function(error, results, fields) {
+				if(error){ console.log(error)};
+				sql = "SELECT all_games.Game_ID, all_games.Game_Tag1, all_games.Game_Tag2, all_games.Game_Tag3, all_games.Name FROM all_games LEFT JOIN recommendation_list ON all_games.Game_ID = recommendation_list.Game_ID WHERE recommendation_list.Game_ID IS NULL AND all_games.Game_Tag1 = ? AND all_games.Game_Tag2 = ? AND all_games.Game_Tag3 = ?";
+				connection.query(sql, [tag1, tag2, tag3], function(error, results, fields) {
+					if (error) {
+						console.log(error);
+					}
+					if(results.length > 0)
+					{
+						var rows = results[0].Name;
+						var hash = results[0].Game_ID;
+						var urlImg = url1 + hash + url2;
+						console.log(urlImg);
+						req.session.gamedata = results[0];
+						console.log(req.session.gamedata.Game_ID);
+						res.render(__dirname + '/templates/listViewer.html', {data: rows, urlImg: urlImg, id: hash});
+						
+					}
+					else
+					{
+						sql = "SELECT all_games.Game_ID, all_games.Game_Tag1, all_games.Game_Tag2, all_games.Game_Tag3, all_games.Name FROM all_games LEFT JOIN recommendation_list ON all_games.Game_ID = recommendation_list.Game_ID WHERE recommendation_list.Game_ID IS NULL AND all_games.Game_Tag1 = ? AND all_games.Game_Tag2 = ?";
+						connection.query(sql, [tag1, tag2], function(error, results, fields) {
+							if (error) {
+								console.log(error);
+							}
+							if(results.length > 0)
+							{
+								var rows = results[0].Name;
+								var hash = results[0].Game_ID;
+								var urlImg = url1 + hash + url2;
+								req.session.gamedata = results[0];
+								console.log(req.session.gamedata.Game_ID);
+								res.render(__dirname + '/templates/listViewer.html', {data: rows, urlImg: urlImg, id: hash});
+								
+							}
+							else
+							{
+								sql = "SELECT all_games.Game_ID, all_games.Game_Tag1, all_games.Game_Tag2, all_games.Game_Tag3, all_games.Name FROM all_games LEFT JOIN recommendation_list ON all_games.Game_ID = recommendation_list.Game_ID WHERE recommendation_list.Game_ID IS NULL AND all_games.Game_Tag1 = ?";
+								connection.query(sql, [tag1], function(error, results, fields) {
+										if (error) {
+											console.log(error);
+										}
+										if(results.length > 0)
+										{
+											var rows = results[0].Name;
+											var hash = results[0].Game_ID;
+											var urlImg = url1 + hash + url2;
+											req.session.gamedata = results[0];
+											console.log(req.session.gamedata.Game_ID);
+											res.render(__dirname + '/templates/listViewer.html', {data: rows, urlImg: urlImg, id: hash});
+											
+										}
+								});
+							}
+						});
+					}
+				});
+			});
+		}
+		else
+		{
+						sql = "SELECT all_games.Game_ID, all_games.Game_Tag1, all_games.Game_Tag2, all_games.Game_Tag3, all_games.Name FROM all_games LEFT JOIN recommendation_list ON all_games.Game_ID = recommendation_list.Game_ID WHERE recommendation_list.Game_ID IS NULL AND all_games.Game_Tag1 = ? AND all_games.Game_Tag2 = ?";
+						connection.query(sql, [tag2, tag1], function(error, results, fields) {
+							if (error) {
+								console.log(error);
+							}
+							if(results.length > 0)
+							{
+								var rows = results[0].Name;
+								var hash = results[0].Game_ID;
+								var urlImg = url1 + hash + url2;
+								req.session.gamedata = results[0];
+								console.log(req.session.gamedata.Game_ID);
+								res.render(__dirname + '/templates/listViewer.html', {data: rows, urlImg: urlImg, id: hash});
+								
+							}
+							else
+							{
+								sql = "SELECT all_games.Game_ID, all_games.Game_Tag1, all_games.Game_Tag2, all_games.Game_Tag3, all_games.Name FROM all_games LEFT JOIN recommendation_list ON all_games.Game_ID = recommendation_list.Game_ID WHERE recommendation_list.Game_ID IS NULL AND all_games.Game_Tag1 = ?";
+								connection.query(sql, [tag1], function(error, results, fields) {
+										if (error) {
+											console.log(error);
+										}
+										if(results.length > 0)
+										{
+											var rows = results[0].Name;
+											var hash = results[0].Game_ID;
+											var urlImg = url1 + hash + url2;
+											req.session.gamedata = results[0];
+											console.log(req.session.gamedata.Game_ID);
+											res.render(__dirname + '/templates/listViewer.html', {data: rows, urlImg: urlImg, id: hash});
+											
+										}
+								});
+							}
+						});
+		}
 	});
+	
+	
+});
+
+app.post('/builderNo', function(req,res) {
+	
+	var url1 = 'https://steamcdn-a.akamaihd.net/steam/apps/';
+	var url2 = '/header.jpg';
+	var steamid = req.session.steamid;
+	var gameid = req.session.gamedata.Game_ID;
+	var name = req.session.gamedata.Name;
+	var tag1 = req.session.gamedata.Game_Tag1;
+	var tag2 = req.session.gamedata.Game_Tag2;
+	var tag3 = req.session.gamedata.Game_Tag3;
+			var sql = "SELECT all_games.Game_ID, all_games.Game_Tag1, all_games.Game_Tag2, all_games.Game_Tag3, all_games.Name FROM all_games LEFT JOIN recommendation_list ON all_games.Game_ID = recommendation_list.Game_ID WHERE recommendation_list.Game_ID IS NULL AND all_games.Game_Tag1 = ?";
+								connection.query(sql, [tag2], function(error, results, fields) {
+										if (error) {
+											console.log(error);
+										}
+										if(results.length > 0)
+										{
+											var rows = results[0].Name;
+											var hash = results[0].Game_ID;
+											var urlImg = url1 + hash + url2;
+											req.session.gamedata = results[0];
+											console.log(req.session.gamedata.Game_ID);
+											res.render(__dirname + '/templates/listViewer.html', {data: rows, urlImg: urlImg, id: hash});
+											
+										}
+								});
+		
+
 });
 
 app.get('/getGames', function(req,res) {
