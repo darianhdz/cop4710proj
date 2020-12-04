@@ -29,6 +29,13 @@
 <div class="acc">
     <div class="content">
         <h2 class="content-head is-center">View List</h2>
+		<% 
+		top.forEach(function(data) {
+		%>
+		<h1><%=data.Game_Tag1%></h1> <p><%=data.tags%></p>
+		<%
+		});
+		%>
 		<table>
         <tr>
             <th>Image</th>

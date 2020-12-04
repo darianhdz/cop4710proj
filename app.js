@@ -102,6 +102,7 @@ app.post('/changeEmail', function(request, response) {
 					if (error) {
 						console.log(error);
 					}
+					request.session.username = newmail;
 					response.redirect('/dashboard');
 					response.end();
 				});
@@ -132,6 +133,7 @@ app.post('/changeWord', function(request, response) {
 					if (error) {
      					console.log(error);
 					}
+					request.session.password = newword;
 					response.redirect('/dashboard');
 					response.end();
 				});
@@ -183,7 +185,15 @@ app.get('/viewList', function(req, res) {
 	var sql = "SELECT * FROM recommendation_list WHERE User_User_ID_Steam = ?";
 	connection.query(sql, [req.session.steamid], function(error, results, fields) {
 		if(error){console.log(error);}
-		res.render(__dirname + '/templates/lists.html', {list: results});	
+		var x = results;
+		console.log(x);
+		sql = "SELECT Game_Tag1, COUNT(*) AS tags FROM recommendation_list GROUP BY Game_Tag1 ORDER BY COUNT(*) DESC LIMIT 3";
+		connection.query(sql, function(error, results, fields) {
+			if(error){console.log(error);}
+			console.log(x);
+			res.render(__dirname + '/templates/lists.html', {list: x, top: results});	
+			res.end();
+		});
 	});		
 });
 
@@ -457,6 +467,45 @@ app.post('/builderYes', function(req,res) {
 											res.render(__dirname + '/templates/listViewer.html', {data: rows, urlImg: urlImg, id: hash});
 											
 										}
+										else
+										{
+											sql = "SELECT all_games.Game_ID, all_games.Game_Tag1, all_games.Game_Tag2, all_games.Game_Tag3, all_games.Name FROM all_games LEFT JOIN recommendation_list ON all_games.Game_ID = recommendation_list.Game_ID WHERE recommendation_list.Game_ID IS NULL AND all_games.Game_Tag1 = ?";
+											connection.query(sql, [tag2], function(error, results, fields) {
+													if (error) {
+														console.log(error);
+													}
+													if(results.length > 0)
+													{
+														var rows = results[0].Name;
+														var hash = results[0].Game_ID;
+														var urlImg = url1 + hash + url2;
+														req.session.gamedata = results[0];
+														console.log(req.session.gamedata.Game_ID);
+														res.render(__dirname + '/templates/listViewer.html', {data: rows, urlImg: urlImg, id: hash});
+														
+													}
+													else
+													{
+														sql = "SELECT all_games.Game_ID, all_games.Game_Tag1, all_games.Game_Tag2, all_games.Game_Tag3, all_games.Name FROM all_games LEFT JOIN recommendation_list ON all_games.Game_ID = recommendation_list.Game_ID WHERE recommendation_list.Game_ID IS NULL AND all_games.Game_Tag1 = ?";
+														connection.query(sql, [tag3], function(error, results, fields) {
+															if (error) {
+																console.log(error);
+															}
+															if(results.length > 0)
+															{
+																var rows = results[0].Name;
+																var hash = results[0].Game_ID;
+																var urlImg = url1 + hash + url2;
+																req.session.gamedata = results[0];
+																console.log(req.session.gamedata.Game_ID);
+																res.render(__dirname + '/templates/listViewer.html', {data: rows, urlImg: urlImg, id: hash});
+																
+															}
+														});
+													}
+													
+											});
+										}
 								});
 							}
 						});
@@ -477,7 +526,7 @@ app.post('/builderNo', function(req,res) {
 	var tag2 = req.session.gamedata.Game_Tag2;
 	var tag3 = req.session.gamedata.Game_Tag3;
 			var sql = "SELECT all_games.Game_ID, all_games.Game_Tag1, all_games.Game_Tag2, all_games.Game_Tag3, all_games.Name FROM all_games LEFT JOIN recommendation_list ON all_games.Game_ID = recommendation_list.Game_ID WHERE recommendation_list.Game_ID IS NULL AND all_games.Game_Tag1 = ?";
-								connection.query(sql, [tag2], function(error, results, fields) {
+								connection.query(sql, [tag3], function(error, results, fields) {
 										if (error) {
 											console.log(error);
 										}
@@ -491,6 +540,44 @@ app.post('/builderNo', function(req,res) {
 											res.render(__dirname + '/templates/listViewer.html', {data: rows, urlImg: urlImg, id: hash});
 											
 										}
+										else
+										{
+											sql = "SELECT all_games.Game_ID, all_games.Game_Tag1, all_games.Game_Tag2, all_games.Game_Tag3, all_games.Name FROM all_games LEFT JOIN recommendation_list ON all_games.Game_ID = recommendation_list.Game_ID WHERE recommendation_list.Game_ID IS NULL AND all_games.Game_Tag1 = ?";
+											connection.query(sql, [tag2], function(error, results, fields) {
+												if (error) {
+													console.log(error);
+												}
+												if(results.length > 0)
+												{
+													var rows = results[0].Name;
+													var hash = results[0].Game_ID;
+													var urlImg = url1 + hash + url2;
+													req.session.gamedata = results[0];
+													console.log(req.session.gamedata.Game_ID);
+													res.render(__dirname + '/templates/listViewer.html', {data: rows, urlImg: urlImg, id: hash});
+													
+												}
+												else
+												{
+													sql = "SELECT all_games.Game_ID, all_games.Game_Tag1, all_games.Game_Tag2, all_games.Game_Tag3, all_games.Name FROM all_games LEFT JOIN recommendation_list ON all_games.Game_ID = recommendation_list.Game_ID WHERE recommendation_list.Game_ID IS NULL AND all_games.Game_Tag1 = ?";
+													connection.query(sql, [tag1], function(error, results, fields) {
+														if (error) {
+															console.log(error);
+														}
+														if(results.length > 0)
+														{
+															var rows = results[0].Name;
+															var hash = results[0].Game_ID;
+															var urlImg = url1 + hash + url2;
+															req.session.gamedata = results[0];
+															console.log(req.session.gamedata.Game_ID);
+															res.render(__dirname + '/templates/listViewer.html', {data: rows, urlImg: urlImg, id: hash});
+															
+														}
+													});
+												}
+											});
+										}
 								});
 		
 
@@ -499,5 +586,7 @@ app.post('/builderNo', function(req,res) {
 app.get('/getGames', function(req,res) {
 	res.sendFile('createList.html',{'root': __dirname + '/templates'});
 });
+
+
 
 
